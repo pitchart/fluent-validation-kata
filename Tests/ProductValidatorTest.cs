@@ -7,60 +7,42 @@ namespace FluentValidationKata.Tests
 {
     public class ProductValidatorTest
     {
+        private readonly ProductValidator _productValidator;
+
+        public ProductValidatorTest()
+        {
+            _productValidator = new ProductValidator();
+        }
+
         [Theory]
         [MemberData(nameof(ProductValidatorTestData.InvalidParameters), MemberType = typeof(ProductValidatorTestData))]
-        public void should_fail_with_blank_value_for_mandatory_properties(Product product, string fieldName)
+        public void should_fail_with_blank_value_for_mandatory_properties(InvalidProductParameter data)
         {
-            var productValidator = new ProductValidator();
+            // Act
+            var result = _productValidator.TestValidate(data.Product);
 
-            var result = productValidator.TestValidate(product);
-
-            result.ShouldHaveValidationErrorFor(fieldName);
+            // Assert
+            result.ShouldHaveValidationErrorFor(data.FieldName);
         }
 
         [Fact]
-        public void should_pass_with_correct_reference()
+        public void should_pass_with_correct_parameters()
         {
+            // Arrange
             var product = new Product
             {
-                Reference = "reference"
+                Reference = "reference",
+                Language = "reference",
+                CategoryId = "010101",
+                SellerId = "4364",
+                Gtin = "gtin"
             };
 
-            var productValidator = new ProductValidator();
-
-            var result = productValidator.TestValidate(product);
-
-            result.ShouldNotHaveValidationErrorFor(product => product.Reference);
-        }
-
-        [Fact]
-        public void should_fail_with_blank_language()
-        {
-            var product = new Product
-            {
-                Language = ""
-            };
-
-            var productValidator = new ProductValidator();
-
-            var result = productValidator.TestValidate(product);
-
-            result.ShouldHaveValidationErrorFor(nameof(product.Language));
-        }
-
-        [Fact]
-        public void should_pass_with_correct_language()
-        {
-            var product = new Product
-            {
-                Language = "reference"
-            };
-
-            var productValidator = new ProductValidator();
-
-            var result = productValidator.TestValidate(product);
-
-            result.ShouldNotHaveValidationErrorFor(product => product.Language);
+            // Act
+            var result = _productValidator.TestValidate(product);
+            
+            // Assert
+            result.ShouldNotHaveAnyValidationErrors();
         }
     }
 }
