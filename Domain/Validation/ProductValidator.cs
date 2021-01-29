@@ -7,6 +7,8 @@ namespace FluentValidationKata.Domain.Validation
         public ProductValidator()
         {
             RuleFor(product => product.Reference).IsMandatory();
+
+            RuleFor(product => product.Language).IsMandatory();
         }
     }
 }

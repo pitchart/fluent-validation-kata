@@ -7,19 +7,15 @@ namespace FluentValidationKata.Tests
 {
     public class ProductValidatorTest
     {
-        [Fact]
-        public void should_fail_with_blank_reference()
+        [Theory]
+        [MemberData(nameof(ProductValidatorTestData.InvalidParameters), MemberType = typeof(ProductValidatorTestData))]
+        public void should_fail_with_blank_value_for_mandatory_properties(Product product, string fieldName)
         {
-            var product = new Product
-            {
-                Reference = ""
-            };
-
             var productValidator = new ProductValidator();
 
             var result = productValidator.TestValidate(product);
 
-            result.ShouldHaveValidationErrorFor(nameof(product.Reference));
+            result.ShouldHaveValidationErrorFor(fieldName);
         }
 
         [Fact]
@@ -35,6 +31,36 @@ namespace FluentValidationKata.Tests
             var result = productValidator.TestValidate(product);
 
             result.ShouldNotHaveValidationErrorFor(product => product.Reference);
+        }
+
+        [Fact]
+        public void should_fail_with_blank_language()
+        {
+            var product = new Product
+            {
+                Language = ""
+            };
+
+            var productValidator = new ProductValidator();
+
+            var result = productValidator.TestValidate(product);
+
+            result.ShouldHaveValidationErrorFor(nameof(product.Language));
+        }
+
+        [Fact]
+        public void should_pass_with_correct_language()
+        {
+            var product = new Product
+            {
+                Language = "reference"
+            };
+
+            var productValidator = new ProductValidator();
+
+            var result = productValidator.TestValidate(product);
+
+            result.ShouldNotHaveValidationErrorFor(product => product.Language);
         }
     }
 }
